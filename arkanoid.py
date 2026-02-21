@@ -43,14 +43,18 @@ class Ball():
         if (self.position.x > WINDOW_WIDTH or self.position.x <= 0):
             self.speed.x = self.speed.x * -1.0
 
-        if (self.position.y >=  WINDOW_HEIGHT  or self.position.y <= self.radius):
+        if (self.position.y <= self.radius):
             self.speed.y =  self.speed.y * - 1.0
+
+        if(self.position.y >=  WINDOW_HEIGHT):
+            pass
+            #loselife
 
         if(check_collision_circle_rec(self.position,self.radius,Rectangle(playerx,playery,playerwidth,playerheight))):
             if self.speed.y > 0:
                 self.speed.y *= -1
                 self.speed.x = (self.position.x - (playerx+(.5*playerwidth)))  * 7
-
+        #do ball-brick collision
 
         motion_this_frame = vector2_scale(self.speed, get_frame_time())
         self.position = vector2_add(self.position, motion_this_frame)
@@ -102,6 +106,7 @@ class Game():
                     self.bricks[i][j].draw(DARKGRAY)
                 else:
                     self.bricks[i][j].draw(GRAY)
+        #draw life lines
 
 
 
