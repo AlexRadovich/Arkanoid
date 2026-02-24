@@ -140,5 +140,8 @@ class Game():
 
     def startup(self):
         pass
+    
+    def shutdown(self):
+        pass
 
 
