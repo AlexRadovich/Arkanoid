@@ -58,11 +58,7 @@ class Ball():
         #do ball-brick collision
 
         motion_this_frame = vector2_scale(self.speed, get_frame_time())
-        self.position = vector2_add(self.position, motion_this_frame)
-
-
-
-    
+        self.position = vector2_add(self.position, motion_this_frame)   
 
 
 
@@ -141,7 +137,8 @@ class Game():
                     else:
                         self.bricks[i][j].draw(GRAY)
         #draw life lines
-
+        for i in range(self.player.life):
+            draw_rectangle(20 + i*30, 550, 28, 10, GRAY)
 
 
 
