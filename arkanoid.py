@@ -118,7 +118,7 @@ class Game():
         
     def draw(self):
         if self.game_over:
-            draw_text("PRESS [ENTER] TO PLAY AGAIN", WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT//2, 40, GRAY)
+            draw_text("PRESS [ENTER] TO PLAY AGAIN", WINDOW_WIDTH//2 - 300, WINDOW_HEIGHT//2, 40, GRAY)
             return
         else:
             if self.paused:
