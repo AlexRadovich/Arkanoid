@@ -37,7 +37,7 @@ class Ball():
     def draw(self):
         draw_circle_v(self.position,self.radius,RED)
 
-    def update(self,playerx,playery,playerwidth,playerheight):
+    def update(self, player):
         if not self.active:
             return
         if (self.position.x > WINDOW_WIDTH or self.position.x <= 0):
@@ -48,13 +48,14 @@ class Ball():
 
         if(self.position.y >=  WINDOW_HEIGHT + self.radius):
             self.active = False
+            player.life -= 1
             return
             #loselife
 
-        if(check_collision_circle_rec(self.position,self.radius,Rectangle(playerx,playery,playerwidth,playerheight))):
+        if(check_collision_circle_rec(self.position,self.radius,Rectangle(player.position.x,player.position.y,player.size.x,player.size.y))):
             if self.speed.y > 0:
                 self.speed.y *= -1
-                self.speed.x = (self.position.x - (playerx+(.5*playerwidth)))  * 7
+                self.speed.x = (self.position.x - (player.position.x+(.5*player.size.x)))  * 7
         #do ball-brick collision
 
         motion_this_frame = vector2_scale(self.speed, get_frame_time())
@@ -112,12 +113,7 @@ class Game():
                     self.player.position.x + self.player.size.x * 0.5,
                     self.player.position.y - self.ball.radius * 2 - 2
                 )
-            self.ball.update(
-                self.player.position.x,
-                self.player.position.y,
-                self.player.size.x,
-                self.player.size.y
-            )
+            self.ball.update(self.player)
 
         
     def draw(self):
@@ -144,4 +140,5 @@ class Game():
 
     def startup(self):
         pass
+
 
