@@ -72,8 +72,20 @@ class Brick():
         self.position = position
         self.active = active
 
-    def update(self):
-        pass
+    def update(self,ball):
+        rec = Rectangle(self.position.x , self.position.y , self.bricksize.x,40)
+        if(self.active and check_collision_circle_rec(ball.position,ball.radius,rec)):
+            # self_mid_x = self.position.x + self.bricksize //2
+            # self_mid_y = self.position.y + 20
+            
+            if ((ball.position.x + ball.radius) >= self.position.x) and (ball.position.x - ball.radius) <= self.position.x:
+                ball.speed.x *= -1
+            elif ((ball.position.x + ball.radius) <= self.position.x) and (ball.position.x - ball.radius) >= self.position.x:
+                ball.speed.x *= -1
+            else:
+                ball.speed.y *= -1
+            self.active = False
+
 
     def draw(self,color):
         draw_rectangle_v(self.position,self.bricksize,color)
@@ -116,6 +128,9 @@ class Game():
                     self.player.position.y - self.ball.radius * 2 - 2
                 )
             self.ball.update(self.player)
+            for i in range(NUM_ROWS):
+                for j in range(NUM_COLS):
+                    self.bricks[i][j].update(self.ball)
 
         
     def draw(self):
@@ -130,10 +145,11 @@ class Game():
             self.ball.draw()
             for i in range(NUM_ROWS):
                 for j in range(NUM_COLS):
-                    if((i+j) %2 == 0):
-                        self.bricks[i][j].draw(DARKGRAY)
-                    else:
-                        self.bricks[i][j].draw(GRAY)
+                    if self.bricks[i][j].active:
+                        if((i+j) %2 == 0):
+                            self.bricks[i][j].draw(DARKGRAY)
+                        else:
+                            self.bricks[i][j].draw(GRAY)
         #draw life lines
         for i in range(self.player.life):
             draw_rectangle(20 + i*30, 550, 28, 10, GRAY)
