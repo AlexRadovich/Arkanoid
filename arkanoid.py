@@ -3,7 +3,6 @@ from settings import *
 from pyray import *
 
 
-
 class Player():
     def __init__(self,position,size,num_lives,speed=300):
         self.position = position
@@ -24,7 +23,7 @@ class Player():
 
 
     def draw(self):
-        draw_rectangle_v(self.position,self.size,WHITE)
+        draw_rectangle_v(self.position,self.size,BLACK)
     
 
 class Ball():
@@ -36,18 +35,20 @@ class Ball():
         self.active = active
 
     def draw(self):
-        draw_circle_v(self.position,self.radius,WHITE)
+        draw_circle_v(self.position,self.radius,RED)
 
     def update(self,playerx,playery,playerwidth,playerheight):
-
+        if not self.active:
+            return
         if (self.position.x > WINDOW_WIDTH or self.position.x <= 0):
             self.speed.x = self.speed.x * -1.0
 
         if (self.position.y <= self.radius):
             self.speed.y =  self.speed.y * - 1.0
 
-        if(self.position.y >=  WINDOW_HEIGHT):
-            pass
+        if(self.position.y >=  WINDOW_HEIGHT + self.radius):
+            self.active = False
+            return
             #loselife
 
         if(check_collision_circle_rec(self.position,self.radius,Rectangle(playerx,playery,playerwidth,playerheight))):
@@ -84,8 +85,11 @@ class Game():
     def __init__(self):
         bricksize = Vector2(WINDOW_WIDTH//(NUM_COLS+1) , 40)
         self.player = Player(Vector2(WINDOW_WIDTH//2 , WINDOW_HEIGHT *7//8) , Vector2(WINDOW_WIDTH//10,20), MAX_LIVES)
-        self.ball = Ball(Vector2(self.player.position.x + (.5) * self.player.size.x,self.player.position.y - self.player.size.y//2 - BALL_RADIUS) , Vector2(0,400), BALL_RADIUS , False)
+        self.ball = Ball(Vector2(self.player.position.x + (.5) * self.player.size.x,self.player.position.y - self.player.size.y//2 - BALL_RADIUS) , Vector2(0,-400), BALL_RADIUS , False)
         self.bricks = [[0 for i in range(NUM_COLS)] for j in range(NUM_ROWS)]
+
+        self.paused = False
+        self.game_over = False
 
         for i in range(NUM_ROWS):
             for j in range(NUM_COLS):
@@ -93,19 +97,49 @@ class Game():
 
 
     def update(self):
-        self.player.update()
-        self.ball.update(self.player.position.x,self.player.position.y,self.player.size.x,self.player.size.y)
+        if is_key_pressed(KeyboardKey.KEY_ENTER) and self.game_over:
+            self.__init__() 
+            return
+        if(is_key_pressed(KeyboardKey.KEY_P)):
+            self.paused = not self.paused
+        if(self.player.life <= 0):
+            self.game_over = True  
+        
+        if(is_key_pressed(KeyboardKey.KEY_SPACE) and not self.ball.active):
+            self.ball.active = True
+
+        if not self.paused and not self.game_over:
+            self.player.update()
+            
+            if not self.ball.active:
+                self.ball.position = Vector2(
+                    self.player.position.x + self.player.size.x * 0.5,
+                    self.player.position.y - self.ball.radius * 2 - 2
+                )
+            self.ball.update(
+                self.player.position.x,
+                self.player.position.y,
+                self.player.size.x,
+                self.player.size.y
+            )
 
         
     def draw(self):
-        self.player.draw()
-        self.ball.draw()
-        for i in range(NUM_ROWS):
-            for j in range(NUM_COLS):
-                if((i+j) %2 == 0):
-                    self.bricks[i][j].draw(DARKGRAY)
-                else:
-                    self.bricks[i][j].draw(GRAY)
+        if self.game_over:
+            draw_text("PRESS [ENTER] TO PLAY AGAIN", WINDOW_WIDTH//2 - 100, WINDOW_HEIGHT//2, 40, GRAY)
+            return
+        else:
+            if self.paused:
+                draw_text("Paused", WINDOW_WIDTH//2 - 50, WINDOW_HEIGHT//2, 40, GRAY)
+                return
+            self.player.draw()
+            self.ball.draw()
+            for i in range(NUM_ROWS):
+                for j in range(NUM_COLS):
+                    if((i+j) %2 == 0):
+                        self.bricks[i][j].draw(DARKGRAY)
+                    else:
+                        self.bricks[i][j].draw(GRAY)
         #draw life lines
 
 
