@@ -75,15 +75,22 @@ class Brick():
     def update(self,ball):
         rec = Rectangle(self.position.x , self.position.y , self.bricksize.x,40)
         if(self.active and check_collision_circle_rec(ball.position,ball.radius,rec)):
-            # self_mid_x = self.position.x + self.bricksize //2
-            # self_mid_y = self.position.y + 20
-            
-            if ((ball.position.x + ball.radius) >= self.position.x) and (ball.position.x - ball.radius) <= self.position.x:
-                ball.speed.x *= -1
-            elif ((ball.position.x + ball.radius) <= self.position.x) and (ball.position.x - ball.radius) >= self.position.x:
+            recmid = Vector2(self.position.x+(self.bricksize.x)//2,self.position.y+20)
+            overlap = GetCollisionRec(rec, Rectangle(ball.position.x - ball.radius, ball.position.y - ball.radius, ball.radius * 2, ball.radius * 2))
+            if (overlap.width <= overlap.height):
+                if(recmid.x < ball.position.x):
+                    ball.position.x += overlap.width
+                else:
+                    ball.position.x -= overlap.width
                 ball.speed.x *= -1
             else:
+                if (recmid.y < ball.position.y):
+                    ball.position.y += overlap.height
+                else:
+                    ball.position.y -= overlap.height
                 ball.speed.y *= -1
+                
+   
             self.active = False
 
 
