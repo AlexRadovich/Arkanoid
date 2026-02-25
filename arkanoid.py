@@ -157,7 +157,6 @@ class Game():
                             self.bricks[i][j].draw(DARKGRAY)
                         else:
                             self.bricks[i][j].draw(GRAY)
-        #draw life lines
         for i in range(self.player.life):
             draw_rectangle(20 + i*30, 550, 28, 10, GRAY)
 
